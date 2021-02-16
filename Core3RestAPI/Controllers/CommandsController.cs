@@ -45,10 +45,11 @@ namespace Core3RestAPI.Controllers
         [HttpGet("{id}", Name="GetCommandById")]
         public ActionResult<CommandReadDTO> GetCommandById(int id)
         {
-            IEnumerable<Command> commandItem = _repository.GetCommandById(id);
+            Command commandItem = _repository.GetCommandById(id);
             if (commandItem != null)
             {
-                return Ok(_mapper.Map<IEnumerable<CommandReadDTO>>(commandItem));
+                //return Ok(_mapper.Map<IEnumerable<CommandReadDTO>>(commandItem));
+                return Ok(_mapper.Map<CommandReadDTO>(commandItem));
             }
             return NotFound();
             
@@ -97,8 +98,22 @@ namespace Core3RestAPI.Controllers
 
         // PUT api/<Commands>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public ActionResult UpdateCommand(int id, [FromBody] CommandUpdateDTO commandUpdateDTO)
         {
+            Command commandModelFromRepo = _repository.GetCommandById(id);
+            if (commandModelFromRepo == null)
+            {
+                return NotFound();
+            }
+            
+            // commandModel e commandUpdate ambos possuem dados
+            // map Update -> Model
+            _mapper.Map(commandUpdateDTO, commandModelFromRepo);
+            _repository.UpdateCommand(commandModelFromRepo);
+
+            return NoContent();
+            
+
             // Sucesso: 204 No Content
         }
 

@@ -11,7 +11,8 @@ namespace Core3RestAPI.Data
         bool SaveChanges();
 
         IEnumerable<Command> GetAppCommands();
-        IEnumerable<Command> GetCommandById(int id);
+        Command GetCommandById(int id);
         int CreateCommand(Command command);
+        void UpdateCommand(Command command);
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Core3RestAPI.Data
 {
     public class MockCommandRepo : ICommanderRepo
-    {      
+    {
         public IEnumerable<Command> GetAppCommands()
         {
             var commands = new List<Command>
@@ -29,12 +29,12 @@ namespace Core3RestAPI.Data
             throw new NotImplementedException();
         }
 
-        int ICommanderRepo.CreateCommand(Command command)
+        public void UpdateCommand(Command command)
         {
             throw new NotImplementedException();
         }
 
-        IEnumerable<Command> ICommanderRepo.GetCommandById(int id)
+        int ICommanderRepo.CreateCommand(Command command)
         {
             throw new NotImplementedException();
         }

@@ -50,11 +50,21 @@ namespace Core3RestAPI.Data
             }
         }
 
-        public IEnumerable<Command> GetCommandById(int id)
+        public Command GetCommandById(int id)
         {
             // Sintaxe using c# 8
             using var connection = new SQLiteConnection(_connectionString);
-            return connection.Query<Command>("SELECT * FROM Command WHERE id=@Id", new { Id = id });
+            string sql = "SELECT * FROM Command WHERE id=@Id";
+
+            try
+            {
+                return connection.Query<Command>(sql, new { Id = id }).First();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+            
             // Ou converter IEnumerable para objeto Command
         }
 
@@ -62,6 +72,15 @@ namespace Core3RestAPI.Data
         {
             // método de commit para entity framework
             throw new NotImplementedException();
+        }
+
+        public void UpdateCommand(Command command)
+        {
+            string sql = "UPDATE command SET HowTo=@HowTo, Line=@Line, Platform=@Platform WHERE id=@Id";
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                connection.Execute(sql, command);
+            }
         }
     }
 }
