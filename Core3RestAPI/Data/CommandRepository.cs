@@ -59,9 +59,10 @@ namespace Core3RestAPI.Data
 
         public IEnumerable<Command> GetAppCommands()
         {
+            string sql = "SELECT * FROM Command";
             using (var connection = new SQLiteConnection(_connectionString))
             {
-                return connection.Query<Command>("SELECT * FROM Command");
+                return connection.Query<Command>(sql);
             }
         }
 
