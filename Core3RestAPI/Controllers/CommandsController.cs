@@ -105,6 +105,7 @@ namespace Core3RestAPI.Controllers
             {
                 return BadRequest();
                 throw;
+                return BadRequest();
             }
 
             // Sucesso: 201 Created
