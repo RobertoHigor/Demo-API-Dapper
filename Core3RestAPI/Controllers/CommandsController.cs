@@ -35,7 +35,17 @@ namespace Core3RestAPI.Controllers
         public ActionResult<IEnumerable<Command>> GetAllCommands()
         {
             var commandItems = _repository.GetAppCommands();
-            return Ok(commandItems);
+            
+            try
+            {
+                return Ok(commandItems);
+            }
+            catch (Exception)
+            {
+                throw;
+                return BadRequest();
+            }
+
             /* Falhas:
              * 400 Bad Request
              * 404 Not Found
@@ -90,6 +100,7 @@ namespace Core3RestAPI.Controllers
             catch (Exception)
             {
                 throw;
+                return BadRequest();
             }
 
             // Sucesso: 201 Created
@@ -108,15 +119,21 @@ namespace Core3RestAPI.Controllers
             if (commandModelFromRepo == null)
             {
                 return NotFound();
+            }            
+            
+            try
+            {
+                // commandModel e commandUpdate ambos possuem dados
+                // map Update -> Model
+                _mapper.Map(commandUpdateDTO, commandModelFromRepo);
+                _repository.UpdateCommand(commandModelFromRepo);
+                return NoContent();
             }
-            
-            // commandModel e commandUpdate ambos possuem dados
-            // map Update -> Model
-            _mapper.Map(commandUpdateDTO, commandModelFromRepo);
-            _repository.UpdateCommand(commandModelFromRepo);
-
-            return NoContent();
-            
+            catch (Exception)
+            {
+                throw;
+                return BadRequest();
+            }                       
 
             // Sucesso: 204 No Content
         }
@@ -132,22 +149,33 @@ namespace Core3RestAPI.Controllers
                 return NotFound();
             }
 
-            // Geranndo CommandUpdateDTO
-            var commandToPatch = _mapper.Map<CommandUpdateDTO>(commandModelFromRepo);
             
-            // Aplicando patch json e validando
-            patchDoc.ApplyTo (commandToPatch, ModelState);
-            if (!TryValidateModel(commandToPatch))
+
+            try
             {
-                // Retorna BadRequest com um Json dizendo o problema
-                return ValidationProblem(ModelState);
+                // Geranndo CommandUpdateDTO
+                var commandToPatch = _mapper.Map<CommandUpdateDTO>(commandModelFromRepo);
+
+                // Aplicando patch json e validando
+                patchDoc.ApplyTo(commandToPatch, ModelState);
+                if (!TryValidateModel(commandToPatch))
+                {
+                    // Retorna BadRequest com um Json dizendo o problema
+                    return ValidationProblem(ModelState);
+                }
+
+                // Com o Entity Framework, o DbContext rastreia as alterações            
+                _mapper.Map(commandToPatch, commandModelFromRepo);
+                _repository.UpdateCommand(commandModelFromRepo);
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                throw;
+                return BadRequest();
             }
 
-            // Com o Entity Framework, o DbContext rastreia as alterações            
-            _mapper.Map(commandToPatch, commandModelFromRepo);
-            _repository.UpdateCommand(commandModelFromRepo);
-
-            return NoContent();
+          
         }
 
         // DELETE api/<Commands>/id
@@ -161,8 +189,17 @@ namespace Core3RestAPI.Controllers
                 return NotFound();
             }
 
-            _repository.DeleteCommand(commandModelFromRepo);
-            return NoContent();
+            try
+            {
+               _repository.DeleteCommand(commandModelFromRepo);
+               return NoContent();
+            }
+            catch (Exception)
+            {
+                throw;
+                return BadRequest();
+            }
+            
 
             // Sucesso: 200 Ok
             // Falha: 204 No Content
