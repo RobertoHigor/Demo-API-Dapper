@@ -2,6 +2,7 @@
 using Core3RestAPI.Data;
 using Core3RestAPI.Dtos;
 using Core3RestAPI.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -72,18 +73,21 @@ namespace Core3RestAPI.Controllers
 
                 // Convertendo entidade para DTO
                 var commandReadDTO = _mapper.Map<CommandReadDTO>(commandModel);
-                commandReadDTO.Id = idCommandCriado;
+                commandReadDTO.Id = idCommandCriado; // Alterando o ID do objeto por conta do Dapple
 
-                // Retornar 201 com a rota do recurso
-                // Nesse caso, está utilizando o método get para retornar o objeto
-                // criado (usando o id) junto com a rota       
+                /*
+                 * É Retornado o código 201 junto com a rota do recurso.
+                 * Por conta do Dapper não utilizar o DbContext, é necessário 
+                 * retornar o objeto criado para obter seu Id que será utilizado
+                 * na rota de resposta para o cliente.
+                 */
                 return CreatedAtRoute(
                     routeName: nameof(GetCommandById),
                     routeValues: new {id = commandReadDTO.Id },
                     value: commandReadDTO);
                 // return CreatedAtRoute(nameof(GetCommandVyID), new {id = commandReadDTO.Id}, commandReadDTO); // jeito resumido
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -96,7 +100,7 @@ namespace Core3RestAPI.Controllers
              */
         }
 
-        // PUT api/<Commands>/5
+        // PUT api/<Commands>/id
         [HttpPut("{id}")]
         public ActionResult UpdateCommand(int id, [FromBody] CommandUpdateDTO commandUpdateDTO)
         {
@@ -117,7 +121,36 @@ namespace Core3RestAPI.Controllers
             // Sucesso: 204 No Content
         }
 
-        // DELETE api/<Commands>/5
+        // PATCH api/<Commands>/id
+        [HttpPatch("{id}")]
+        public ActionResult PartialCommandUpdate(int id, JsonPatchDocument<CommandUpdateDTO> patchDoc)
+        {
+            // Checando se o recurso existe
+            Command commandModelFromRepo = _repository.GetCommandById(id);
+            if (commandModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            // Geranndo CommandUpdateDTO
+            var commandToPatch = _mapper.Map<CommandUpdateDTO>(commandModelFromRepo);
+            
+            // Aplicando patch json e validando
+            patchDoc.ApplyTo (commandToPatch, ModelState);
+            if (!TryValidateModel(commandToPatch))
+            {
+                // Retorna BadRequest com um Json dizendo o problema
+                return ValidationProblem(ModelState);
+            }
+
+            // Com o Entity Framework, o DbContext rastreia as alterações            
+            _mapper.Map(commandToPatch, commandModelFromRepo);
+            _repository.UpdateCommand(commandModelFromRepo);
+
+            return NoContent();
+        }
+
+        // DELETE api/<Commands>/id
         [HttpDelete("{id}")]
         public void Delete(int id)
         {

@@ -14,9 +14,10 @@ namespace Core3RestAPI.Profiles
         public CommandsProfile()
         {
             // source -> target
-            CreateMap<Command, CommandReadDTO>();
-            CreateMap<CommandCreateDTO, Command>();
-            CreateMap<CommandUpdateDTO, Command>();
+            CreateMap<Command, CommandReadDTO>(); // List
+            CreateMap<CommandCreateDTO, Command>(); // Create
+            CreateMap<CommandUpdateDTO, Command>(); // Update
+            CreateMap<Command, CommandUpdateDTO>(); // Patch
         }
 
         public override string ProfileName => "DomainToViewModelMappings";

@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core3RestAPI.Profiles;
 using System.Reflection;
+using Newtonsoft.Json.Serialization;
 
 namespace Core3RestAPI
 {
@@ -32,13 +33,20 @@ namespace Core3RestAPI
             services.AddControllers();
 
             // Injeção de dependência           
-            services.AddScoped<ICommanderRepo, CommandRepository>();
+            services.AddScoped<ICommanderRepo, CommandRepository>();            
+            services.AddControllers().AddNewtonsoftJson(s =>
+            {
+                s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            });
 
             // AutoMapper       
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            
+
             //services.AddAutoMapper(Assembly.GetAssembly(typeof(CommandsProfile))); // Se estiver em outro projeto
 
-            // Aqui pode ser adicionado tambem o DbContext
+            // Aqui pode ser adicionado tambem o DbContext, no caso de EF
             /* Exemplo:
              * services.AddDbContext<CommanderContext>(opt => opt.UseSqlServer
                 (Configuration.GetConnectionString("DefaultConnection")));
