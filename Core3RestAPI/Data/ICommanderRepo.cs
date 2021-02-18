@@ -14,5 +14,6 @@ namespace Core3RestAPI.Data
         Command GetCommandById(int id);
         int CreateCommand(Command command);
         void UpdateCommand(Command command);
+        void DeleteCommand(Command command);
     }
 }

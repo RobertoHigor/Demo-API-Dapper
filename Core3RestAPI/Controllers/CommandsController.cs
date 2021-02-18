@@ -152,8 +152,18 @@ namespace Core3RestAPI.Controllers
 
         // DELETE api/<Commands>/id
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public ActionResult Delete(int id)
         {
+            // Checando se o recurso existe
+            Command commandModelFromRepo = _repository.GetCommandById(id);
+            if (commandModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            _repository.DeleteCommand(commandModelFromRepo);
+            return NoContent();
+
             // Sucesso: 200 Ok
             // Falha: 204 No Content
         }

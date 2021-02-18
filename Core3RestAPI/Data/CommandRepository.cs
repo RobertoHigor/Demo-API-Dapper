@@ -42,6 +42,21 @@ namespace Core3RestAPI.Data
             }
         }
 
+        public void DeleteCommand(Command command)
+        {
+            string sql = "DELETE FROM Command WHERE id=@Id";
+
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                connection.Execute(sql, command);
+            }
+        }
+
         public IEnumerable<Command> GetAppCommands()
         {
             using (var connection = new SQLiteConnection(_connectionString))

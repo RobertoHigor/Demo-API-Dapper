@@ -8,6 +8,11 @@ namespace Core3RestAPI.Data
 {
     public class MockCommandRepo : ICommanderRepo
     {
+        public void DeleteCommand(Command command)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<Command> GetAppCommands()
         {
             var commands = new List<Command>
