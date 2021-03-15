@@ -46,8 +46,7 @@ namespace Core3RestAPI.Controllers
             }
             catch (Exception)
             {                
-                return BadRequest();
-                throw;
+                return BadRequest();                
             }
 
             /* Falhas:
@@ -103,9 +102,7 @@ namespace Core3RestAPI.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
-                throw;
-                return BadRequest();
+                return BadRequest();                
             }
 
             // Sucesso: 201 Created
@@ -136,8 +133,7 @@ namespace Core3RestAPI.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
-                throw;                
+                return BadRequest();                             
             }                       
 
             // Sucesso: 204 No Content
@@ -176,8 +172,7 @@ namespace Core3RestAPI.Controllers
             }
             catch (Exception)
             {                
-                return BadRequest();
-                throw;
+                return BadRequest();            
             }
 
           
@@ -201,8 +196,7 @@ namespace Core3RestAPI.Controllers
             }
             catch (Exception)
             {                
-                return BadRequest();
-                throw;
+                return BadRequest();               
             }
             
 
